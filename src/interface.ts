@@ -5,5 +5,6 @@ export interface itfData  {
     total: number;
     client: string;
     invoice: string;
+    createdAt: any
 
 }

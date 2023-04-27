@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
@@ -7,10 +7,13 @@ import { RootState } from './app/store';
 import { getDataTable, getDataDelete } from './features/table/tableSlice';
 import { itfData } from '../src/interface';
 import { PaginationControl } from 'react-bootstrap-pagination-control';
+import { current } from '@reduxjs/toolkit';
+import Pagination from './app/components/pagination';
+import Table from './app/components/tablePage';
+
 
 
 function App() {
-  
   const tables = useSelector((state: RootState) => state.table.tables);
   const dispatch = useDispatch()
   const tokenStr = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY4MjE2MzAxOH0.1OHw4SAkI8-9f6QZWHFG7kWxKAkjz90TiHo960AfoNQ'
@@ -21,9 +24,23 @@ function App() {
   const [filterTo, setFilterTo] = React.useState([]);
   const [filterInvoice, setFilterInvoice] = React.useState('');
   const [datas, setDatas] = React.useState([]);
+ 
   const [selected, setSelected] = useState(filterSatus[0]);
   const [selectClient, setSelectClient] = useState(fiterClient[0]);
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(1);
+
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostPerspage] = useState(3);
+
+  
+  const indexOfLastPage = currentPage* postsPerPage;
+  const indexOfFirstPage = indexOfLastPage - postsPerPage;
+  const currentPosts = datas.slice(indexOfFirstPage, indexOfLastPage);
+  // const currentPage = d
+
+  
+
 
   const getDatas =  () => {
     axios
@@ -31,6 +48,7 @@ function App() {
     .then((response)=>{
       dispatch(getDataTable(response.data.data))
       setDatas(response.data.data)
+      
      
       
     })
@@ -68,6 +86,10 @@ function App() {
      
   }
 
+ 
+
+  
+
   const handleChangeStatus = (e: any) => {
     const newStatus = e.target.value;
     setSelected(newStatus);
@@ -76,10 +98,11 @@ function App() {
     })
     setDatas(newDatats)
     
+    
   }
   const handleChangeClient = (e: any) => {
     const newClient = e.target.value;
-    console.log(newClient)
+   
     setSelectClient(newClient);
     let newDatas: any = []
     newDatas = tables.filter((data: any, index: number) =>{
@@ -92,31 +115,89 @@ function App() {
       })
       
     }
-    
-    
-    setDatas(updateDatas)
-    
+   setDatas(updateDatas) 
   }
 
   const handleChangeInvoice = (e: any) =>{
     const newInvoice = e.target.value;
-    console.log(newInvoice);
-    let newDatas = tables.filter((data: any) =>{
-      return data.invoice === newInvoice;
-    })
-
+    let newDatas
+    if(newInvoice){
+      newDatas = tables.filter((data: any) =>{
+        if (data.invoice) return data.invoice.includes(newInvoice);
+      })
+    }
+    else {
+      newDatas = [...tables]
+    }
     setDatas(newDatas);
-    
+   }
 
-    
-  }
+ 
 
-  let date: Date = new Date("2023-04-25T11:58:06.000Z")
-  console.log(date)
+  
+const [fromConvert, setFromConvert] = useState(0)
+const [toConvert, setToConvert] = useState(0)
+const [dateDataConvert, setDateDataConvert] = useState<any>([])
+
+  
+const dates = tables.map((table: any) => {
+  return (new Date(table.createdAt)).getTime() / 1000;
+});
+
+
+console.log(dates)
+   
+   const handleChangeFrom =(e: any) =>{
+    const newFrom = (new Date(e.target.value)).getTime() / 1000;
+    setFromConvert(newFrom)
+   }
+
+   const handleChangeTo =(e: any) =>{
+    const newTo = (new Date(e.target.value)).getTime() / 1000;
+    setToConvert(newTo);
+   }
+   let a :any;
+   useEffect(() => {
+     if(fromConvert && toConvert){
+      a =dates.filter((date: any) => date > fromConvert && date<toConvert)
+      
+      
+      setDatas(a)
+    }
+
+
+   },[fromConvert,toConvert])
+  
+  
+
+  // const [dateConvert, setDateConvert] = useState<number>();
+
+  // tables.map((data: any) =>{
+  //   let dateData = new Date(data.createdAt).getTime() / 1000
+  //   setDateConvert(dateData)
+    
+  // })
+  
+ 
+
+
+// console.log(datas)
+  // useEffect(()=>{
+  //   const fintDate = tables.filter((data: any)=>{
+  //     return  
+  //   })
+  // },[fromConvert, toConvert])
+
+
+
+
+
+
+const paginate = (pageNumber: any) =>setCurrentPage(pageNumber)
+
 
 
 return(
-  
     <div className="App">
 
       <div className='inSearch'>
@@ -142,63 +223,22 @@ return(
         
       </select>
 
-      <input type="date" className='input'/>
-      <input type="date" className='input'/>
+      <input type="date" className='input' onChange={handleChangeFrom}/>
+      <input type="date" className='input' onChange={handleChangeTo}/>
       <input type="text" className='input' onChange={handleChangeInvoice} placeholder='        Invoice'/>
       </div>
           
-
-
-      <table className="table table-striped" >
-        <thead>
-          <tr>
-            <th scope="col" className='tableHead'>Status</th>
-            <th scope="col" className='tableHead'>Date</th>
-            <th scope="col" className='tableHead'>Client</th>
-            <th scope="col" className='tableHead'>Currentcy</th>
-            <th scope="col" className='tableHead'>Total</th>
-            <th scope="col" className='tableHead'>Invoice#</th>
-            <th scope="col" className='tableHead'></th>            
-          </tr>
-        </thead>
-        <tbody>
-      {datas.map((data: itfData) =>{
-        // console.log(tables)
-      return(
-          <tr key={data.id}>
-            <th scope="row">{data.status}</th>
-            <td>{data.id}</td>
-            <td>{data.client}</td>
-            <td>{data.currency}</td>
-            <td>{data.total}</td>
-            <td>{data.invoice}</td>
-            <td style={{display: 'flex', justifyContent: 'space-around'}}>
-              <button>overview</button>
-              <button onClick={() => HandleDelete(data.id)}>delete</button>
-              
-            </td>
-          </tr>
-            )})}
-        </tbody>
-
-
-      </table>
+      <Table currentPosts={currentPosts} HandleDelete={HandleDelete} />
       
-      <PaginationControl
-    page={page}
-    between={4}
-    total={datas.length}
-    limit={8}
-    changePage={(page) => {
-      setPage(page); 
-      console.log(page)
-    }}
-    ellipsis={1}
-  />
-      <div>
-        
-      </div>
+      
+      
+
+
+    
+
+      <Pagination postsPerPage={postsPerPage} totalPost={datas.length} paginate={paginate} />
     </div>
+    
   );
 }
 
