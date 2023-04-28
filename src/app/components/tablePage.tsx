@@ -18,22 +18,15 @@ interface datatable {
 const Table : React.FC<datatable> = ({currentPosts, HandleDelete})=>{
 
   const [dataPopup, setDataPopup] = useState({})
-  const handleViewDetail =(id: any)=>{
-    const tokenStr = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY4MjE2MzAxOH0.1OHw4SAkI8-9f6QZWHFG7kWxKAkjz90TiHo960AfoNQ'
-   
-      axios
-      .get(`http://api.training.div3.pgtest.co/api/v1/product/${id}`, { headers: {"Authorization" : `${tokenStr}`}}) 
-      .then((response: any)=>{
-        setDataPopup(response.data.data);
-        console.log(response.data.data);
 
-    
-      })
-      .catch((error: any)=>{
-        console.log(error);
-      })
-   
+  const [showDetail, setShowDetail] = useState(false);
+
+  const handleClick = () => {
+    setShowDetail(true);
   }
+
+
+
     return(
         
 
@@ -59,12 +52,10 @@ const Table : React.FC<datatable> = ({currentPosts, HandleDelete})=>{
           <td>{moment(data.createdAt, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('DD/MM/YYYY')}</td>
           <td>{data.client}</td>
           <td>{data.currency}</td>
-          <td>{data.total.toLocaleString('de-DE')}</td>
+          <td>{data.total && data.total.toLocaleString('de-DE')}</td>
           <td>{data.invoice}</td>
           <td style={{display: 'flex', justifyContent: 'space-around'}}>
-            <button onClick={()=> handleViewDetail(data.id)}>
-                  ...
-            </button>
+          {<ViewDetail id={(data.id)} />}
               
 
 

@@ -132,41 +132,50 @@ function App() {
     setDatas(newDatas);
    }
 
- 
 
-  
-const [fromConvert, setFromConvert] = useState(0)
-const [toConvert, setToConvert] = useState(0)
-const [dateDataConvert, setDateDataConvert] = useState<any>([])
-
-  
-const dates = tables.map((table: any) => {
-  return (new Date(table.createdAt)).getTime() / 1000;
-});
+const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
 
-console.log(dates)
-   
-   const handleChangeFrom =(e: any) =>{
-    const newFrom = (new Date(e.target.value)).getTime() / 1000;
-    setFromConvert(newFrom)
-   }
 
-   const handleChangeTo =(e: any) =>{
-    const newTo = (new Date(e.target.value)).getTime() / 1000;
-    setToConvert(newTo);
-   }
-   let a :any;
-   useEffect(() => {
-     if(fromConvert && toConvert){
-      a =dates.filter((date: any) => date > fromConvert && date<toConvert)
-      
-      
-      setDatas(a)
+  const handleFromDateChange = (event: any) => {
+    setFromDate(event.target.value);
+  };
+
+  const handleToDateChange = (event: any) => {
+    setToDate(event.target.value);
+  };
+
+
+  const filterDates = () => {
+    const fromDateWithEndOfDay = fromDate !== "" ? new Date(fromDate) : "";
+    const toDateWithEndOfDay = toDate !== "" ? new Date(toDate) : "";
+
+    if (toDateWithEndOfDay !== "") {
+      toDateWithEndOfDay.setHours(23, 59, 59, 999);
+    }
+
+    if (fromDateWithEndOfDay !== "") {
+      fromDateWithEndOfDay.setHours(0, 0, 0, 0);
     }
 
 
-   },[fromConvert,toConvert])
+
+    return tables.filter((data: any) => {
+      return (
+        (fromDateWithEndOfDay === "" || new Date(data.createdAt) >= fromDateWithEndOfDay) && (toDateWithEndOfDay === "" || new Date(data.createdAt) <= toDateWithEndOfDay)
+      );
+    });
+  };
+
+   let a :any;
+   useEffect(() => {
+     if(fromDate && toDate){
+      setDatas(filterDates());
+    }
+
+
+   },[fromDate,toDate])
   
   
 
@@ -223,8 +232,8 @@ return(
         
       </select>
 
-      <input type="date" className='input' onChange={handleChangeFrom}/>
-      <input type="date" className='input' onChange={handleChangeTo}/>
+      <input type="date" className='input' onChange={handleFromDateChange }/>
+      <input type="date" className='input' onChange={handleToDateChange }/>
       <input type="text" className='input' onChange={handleChangeInvoice} placeholder='        Invoice'/>
       </div>
           
