@@ -114,7 +114,7 @@ function UploadImage(){
   
     return (
       <div className="App">
-        <div className="Crop-Controls">
+        <div className="Crop-Controls" >
           <input type="file" accept="image/*" onChange={onSelectFile} />
           <div>
             <label htmlFor="scale-input">Scale: </label>
