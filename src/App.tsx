@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 // import logo from './logo.svg';
+
+
 import './App.css';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
@@ -10,10 +12,16 @@ import { PaginationControl } from 'react-bootstrap-pagination-control';
 import { current } from '@reduxjs/toolkit';
 import Pagination from './app/components/pagination';
 import Table from './app/components/tablePage';
+import Avatar from "react-avatar-edit";
+
+
+
 
 
 
 function App() {
+
+  
   const tables = useSelector((state: RootState) => state.table.tables);
   const dispatch = useDispatch()
   const tokenStr = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY4MjE2MzAxOH0.1OHw4SAkI8-9f6QZWHFG7kWxKAkjz90TiHo960AfoNQ'
@@ -29,6 +37,10 @@ function App() {
   const [selectClient, setSelectClient] = useState(fiterClient[0]);
   const [page, setPage] = useState(1);
 
+  //const upload img
+
+
+
 
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostPerspage] = useState(3);
@@ -41,6 +53,24 @@ function App() {
 
   
 
+  const [preview, setPreview] = useState(null);
+  const [src, setSrc] = useState("./test.png");
+
+  const onClose = () => {
+    setPreview(null);
+  };
+
+  const onCrop = (preview: any) => {
+    setPreview(preview);
+  };
+
+  const onBeforeFileLoad = (elem: any) => {
+    console.log('ok');
+    if (elem.target.files[0].size > 71680) {
+      alert("File is too big!");
+      elem.target.value = "";
+    }
+  };
 
   const getDatas =  () => {
     axios
@@ -59,6 +89,9 @@ function App() {
   React.useEffect(()=>{
     getDatas()
   },[])
+
+
+  //upload Immage
 
 
   var HandleDelete = (id: number) =>{   
@@ -85,10 +118,6 @@ function App() {
 
      
   }
-
- 
-
-  
 
   const handleChangeStatus = (e: any) => {
     const newStatus = e.target.value;
@@ -207,7 +236,21 @@ const paginate = (pageNumber: any) =>setCurrentPage(pageNumber)
 
 
 return(
+
+ 
     <div className="App">
+
+<Avatar
+  width={390}
+  height={295}
+  onCrop={onCrop}
+  onClose={onClose}
+  onBeforeFileLoad={onBeforeFileLoad}
+  src={src}
+/>
+{preview ? <img src={preview} alt="Preview" /> : <div></div>}
+
+
 
       <div className='inSearch'>
      
@@ -239,13 +282,9 @@ return(
           
       <Table currentPosts={currentPosts} HandleDelete={HandleDelete} />
       
-      
-      
-
-
-    
-
       <Pagination postsPerPage={postsPerPage} totalPost={datas.length} paginate={paginate} />
+
+
     </div>
     
   );
