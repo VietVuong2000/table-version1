@@ -13,6 +13,7 @@ import { current } from '@reduxjs/toolkit';
 import Pagination from './app/components/pagination';
 import Table from './app/components/tablePage';
 import Avatar from "react-avatar-edit";
+import UploadImage from './app/components/uploadImage';
 
 
 
@@ -208,24 +209,7 @@ const [fromDate, setFromDate] = useState("");
   
   
 
-  // const [dateConvert, setDateConvert] = useState<number>();
-
-  // tables.map((data: any) =>{
-  //   let dateData = new Date(data.createdAt).getTime() / 1000
-  //   setDateConvert(dateData)
-    
-  // })
   
- 
-
-
-// console.log(datas)
-  // useEffect(()=>{
-  //   const fintDate = tables.filter((data: any)=>{
-  //     return  
-  //   })
-  // },[fromConvert, toConvert])
-
 
 
 
@@ -283,6 +267,8 @@ return(
       <Table currentPosts={currentPosts} HandleDelete={HandleDelete} />
       
       <Pagination postsPerPage={postsPerPage} totalPost={datas.length} paginate={paginate} />
+
+      <UploadImage />
 
 
     </div>
