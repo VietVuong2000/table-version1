@@ -5,15 +5,16 @@ import axios from 'axios';
 import { itfData } from "../../interface";
 import moment from 'moment';
 import { log, table } from 'console';
-import tableSlice from '../../features/table/tableSlice';
+import tableSlice, { getDataDelete, getDataTable } from '../../features/table/tableSlice';
 
 interface DataPopup {
   id: any;
+  getDatas: any
 }
 
 
 
-const ViewDetail: React.FC<DataPopup> = ({ id }) => {
+const ViewDetail: React.FC<DataPopup> = ({ id, getDatas }) => {
   // console.log(id);
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState<itfData>({
@@ -49,6 +50,8 @@ const ViewDetail: React.FC<DataPopup> = ({ id }) => {
       console.log(error);
     })
     
+
+  
   }
   console.log(status)
   
@@ -79,9 +82,10 @@ const ViewDetail: React.FC<DataPopup> = ({ id }) => {
      console.log(error);
    })
 
-    
+    getDatas();
     setIsOpen(false);
   }
+  
 
 
   return (

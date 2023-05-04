@@ -264,7 +264,7 @@ return(
       <input type="text" className='input' onChange={handleChangeInvoice} placeholder='        Invoice'/>
       </div>
           
-      <Table currentPosts={currentPosts} HandleDelete={HandleDelete} />
+      <Table currentPosts={currentPosts} HandleDelete={HandleDelete}  getDatas={getDatas}/>
       
       <Pagination postsPerPage={postsPerPage} totalPost={datas.length} paginate={paginate} />
 

@@ -9,13 +9,14 @@ import moment from "moment";
 
 interface datatable {
     currentPosts: any,
-    HandleDelete: any
+    HandleDelete: any,
+    getDatas: any,
 
 }
 
 
 
-const Table : React.FC<datatable> = ({currentPosts, HandleDelete})=>{
+const Table : React.FC<datatable> = ({currentPosts, HandleDelete, getDatas})=>{
 
   const [dataPopup, setDataPopup] = useState({})
 
@@ -55,7 +56,7 @@ const Table : React.FC<datatable> = ({currentPosts, HandleDelete})=>{
           <td>{data.total && data.total.toLocaleString('de-DE')}</td>
           <td>{data.invoice}</td>
           <td style={{display: 'flex', justifyContent: 'space-around'}}>
-          {<ViewDetail id={(data.id)} />}
+          {<ViewDetail id={(data.id)}  getDatas={getDatas}/>}
               
 
 
